@@ -155,7 +155,8 @@ function along(
   const segs: number[] = [];
   let total = 0;
   for (let i = 1; i < path.length; i++) {
-    const p = path[i - 1]!, q = path[i]!;
+    const p = path[i - 1]!,
+      q = path[i]!;
     const len = Math.hypot(q.x - p.x, q.y - p.y, (q.z - p.z) / TW);
     segs.push(len);
     total += len;
@@ -170,7 +171,14 @@ function along(
   return path[path.length - 1]!;
 }
 
-export function blockGeometry(x: number, y: number, w: number, d: number, h: number, z0 = 0): {
+export function blockGeometry(
+  x: number,
+  y: number,
+  w: number,
+  d: number,
+  h: number,
+  z0 = 0,
+): {
   top: ScreenPt[];
   left: ScreenPt[];
   right: ScreenPt[];
@@ -430,9 +438,7 @@ export class Stage {
       project(x1 + pad, y1 + pad),
       project(x0 - pad, y1 + pad),
     ];
-    this.floor.appendChild(
-      svgEl("path", { d: poly(fill), class: "iso-floor__fill" }),
-    );
+    this.floor.appendChild(svgEl("path", { d: poly(fill), class: "iso-floor__fill" }));
     const grid = svgEl("g", { class: "iso-floor__grid" });
     const step = 1;
     for (let x = Math.ceil(x0 - pad); x <= x1 + pad; x += step) {
@@ -582,13 +588,13 @@ export class Stage {
         return el;
       });
     }
-    this.placeBlockText(view, blockGeometry(view.desc.x, view.desc.y, view.desc.w, view.desc.d, Math.max(view.h, 0.5)));
+    this.placeBlockText(
+      view,
+      blockGeometry(view.desc.x, view.desc.y, view.desc.w, view.desc.d, Math.max(view.h, 0.5)),
+    );
   }
 
-  private placeBlockText(
-    view: BlockView,
-    geo: ReturnType<typeof blockGeometry>,
-  ): void {
+  private placeBlockText(view: BlockView, geo: ReturnType<typeof blockGeometry>): void {
     const topY = Math.min(...geo.top.map((p) => p.y));
     const botY = Math.max(...geo.top.map((p) => p.y));
     const leftX = Math.min(...geo.top.map((p) => p.x));
@@ -689,7 +695,10 @@ export class Stage {
       const g = this.overlays.querySelector(`[data-callout="${item.id}"]`);
       if (!(g instanceof SVGGElement)) continue;
       const p = project(item.x, item.y, item.z ?? 0);
-      g.setAttribute("transform", `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${k.toFixed(4)})`);
+      g.setAttribute(
+        "transform",
+        `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${k.toFixed(4)})`,
+      );
       const title = item.title ?? "";
       const lines = item.text.split("\n").filter((line) => line.length > 0);
       const fs = this.filmPx(lines.length > 1 ? TYPE.body : TYPE.callout);
@@ -775,8 +784,7 @@ export class Stage {
       if (!view) {
         const g = svgEl("g", { class: "iso-packet", "data-id": desc.id });
         this.packetsLayer.appendChild(g);
-        const startT =
-          this.reduced || rebuild || !desc.path || (desc.progress ?? 0) >= 1 ? 1 : 0;
+        const startT = this.reduced || rebuild || !desc.path || (desc.progress ?? 0) >= 1 ? 1 : 0;
         view = {
           desc,
           g,
@@ -813,13 +821,38 @@ export class Stage {
     const tone = atEnd || !d.path ? d.tone : view.t < 0.45 ? "idle" : d.tone;
     const pal = tone === "ok" ? PALETTES.ok : tone === "bad" ? PALETTES.fail : PALETTES.sand;
     const half = 0.62;
-    const geo = blockGeometry(pos.x - half, pos.y - half, half * 2, half * 2, 16, Math.max(0, pos.z - 16));
+    const geo = blockGeometry(
+      pos.x - half,
+      pos.y - half,
+      half * 2,
+      half * 2,
+      16,
+      Math.max(0, pos.z - 16),
+    );
     view.g.replaceChildren();
     view.g.setAttribute("transform", "");
     const shadow = svgEl("path", { d: shadowPath(geo.base), class: "iso-block__shadow" });
-    const left = svgEl("path", { d: poly(geo.left), fill: pal.left, stroke: pal.stroke, "stroke-width": 1.1, "stroke-linejoin": "round" });
-    const right = svgEl("path", { d: poly(geo.right), fill: pal.right, stroke: pal.stroke, "stroke-width": 1.1, "stroke-linejoin": "round" });
-    const top = svgEl("path", { d: poly(geo.top), fill: pal.top, stroke: pal.stroke, "stroke-width": 1.1, "stroke-linejoin": "round" });
+    const left = svgEl("path", {
+      d: poly(geo.left),
+      fill: pal.left,
+      stroke: pal.stroke,
+      "stroke-width": 1.1,
+      "stroke-linejoin": "round",
+    });
+    const right = svgEl("path", {
+      d: poly(geo.right),
+      fill: pal.right,
+      stroke: pal.stroke,
+      "stroke-width": 1.1,
+      "stroke-linejoin": "round",
+    });
+    const top = svgEl("path", {
+      d: poly(geo.top),
+      fill: pal.top,
+      stroke: pal.stroke,
+      "stroke-width": 1.1,
+      "stroke-linejoin": "round",
+    });
     view.g.append(shadow, left, right, top);
     const apex = geo.apex;
     const badge = svgEl("g", {
@@ -827,19 +860,25 @@ export class Stage {
     });
     const fs = this.filmPx(TYPE.packet);
     badge.appendChild(
-      svgEl("text", {
-        x: 0,
-        y: this.filmPx(2),
-        "text-anchor": "middle",
-        "dominant-baseline": "middle",
-        "font-size": fs,
-        class: "iso-packet__label",
-      }, d.label),
+      svgEl(
+        "text",
+        {
+          x: 0,
+          y: this.filmPx(2),
+          "text-anchor": "middle",
+          "dominant-baseline": "middle",
+          "font-size": fs,
+          class: "iso-packet__label",
+        },
+        d.label,
+      ),
     );
     if (d.check && atEnd) {
       const cy = -this.filmPx(20);
       const r = this.filmPx(8);
-      badge.appendChild(svgEl("circle", { cx: 0, cy, r, class: tone === "bad" ? "iso-check is-bad" : "iso-check" }));
+      badge.appendChild(
+        svgEl("circle", { cx: 0, cy, r, class: tone === "bad" ? "iso-check is-bad" : "iso-check" }),
+      );
       const m = r * 0.55;
       badge.appendChild(
         svgEl("path", {
@@ -973,4 +1012,3 @@ function fitFont(text: string, maxW: number, maxSize: number, minSize: number): 
 function clamp(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, n));
 }
-

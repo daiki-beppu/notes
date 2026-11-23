@@ -11,12 +11,7 @@ import {
 } from "./checker";
 import { CHAPTER, STEPS, type CalloutKind } from "./lesson";
 import { Stage } from "./iso";
-import {
-  describeScene,
-  type CellMark,
-  type ScanStatus,
-  type SceneState,
-} from "./scene";
+import { describeScene, type CellMark, type ScanStatus, type SceneState } from "./scene";
 
 const DWELL_MS = 2800;
 const SCAN_BATCH = 4;
@@ -272,28 +267,37 @@ function resetUnitTests(): void {
 function animateUnitTests(): void {
   state.unitResults = [null, null, null];
   UNIT_TESTS.forEach((t, i) => {
-    const id = window.setTimeout(() => {
-      state.unitResults[i] = runAgainstExpected(t.x, t.expected);
-      state.unitFresh = i;
-      paintCell(t.x, "unit");
-      render();
-    }, TEST_STAGGER_MS * (i + 1));
+    const id = window.setTimeout(
+      () => {
+        state.unitResults[i] = runAgainstExpected(t.x, t.expected);
+        state.unitFresh = i;
+        paintCell(t.x, "unit");
+        render();
+      },
+      TEST_STAGGER_MS * (i + 1),
+    );
     timers.tests.push(id);
   });
-  const settle = window.setTimeout(() => {
-    state.unitFresh = -1;
-    render();
-  }, TEST_STAGGER_MS * UNIT_TESTS.length + 780);
+  const settle = window.setTimeout(
+    () => {
+      state.unitFresh = -1;
+      render();
+    },
+    TEST_STAGGER_MS * UNIT_TESTS.length + 780,
+  );
   timers.tests.push(settle);
 }
 
 function animateTrace(): void {
   const start = state.tracePhase < 0 ? 0 : state.tracePhase + 1;
   for (let phase = start; phase <= 4; phase++) {
-    const id = window.setTimeout(() => {
-      state.tracePhase = phase;
-      render();
-    }, TRACE_STAGGER_MS * (phase - start + 1));
+    const id = window.setTimeout(
+      () => {
+        state.tracePhase = phase;
+        render();
+      },
+      TRACE_STAGGER_MS * (phase - start + 1),
+    );
     timers.trace.push(id);
   }
 }
@@ -323,10 +327,7 @@ function onRunTest(): void {
     return;
   }
   const result = runAgainstSpec(value);
-  state.userResults = [
-    result,
-    ...state.userResults.filter((r) => r.x !== value),
-  ].slice(0, 6);
+  state.userResults = [result, ...state.userResults.filter((r) => r.x !== value)].slice(0, 6);
   paintCell(value, result.pass ? "user" : "fail");
   msg.hidden = false;
   if (!result.pass) {
@@ -444,8 +445,7 @@ function render(): void {
   play.textContent = state.playing || scanning ? "一時停止" : "再生";
 
   document.querySelector<HTMLButtonElement>("#prev")!.disabled = state.step === 0;
-  document.querySelector<HTMLButtonElement>("#next")!.disabled =
-    state.step === STEPS.length - 1;
+  document.querySelector<HTMLButtonElement>("#next")!.disabled = state.step === STEPS.length - 1;
 
   const fill = document.querySelector<HTMLElement>("#rail-fill")!;
   fill.style.width = `${(state.step / (STEPS.length - 1)) * 100}%`;
@@ -494,15 +494,15 @@ function paintLegend(step: number): void {
           ["user", "自分で試した"],
         ];
   legend.innerHTML = items
-    .map(([tone, label]) => `<span class="swatch"><i class="swatch__chip swatch--${tone}"></i>${label}</span>`)
+    .map(
+      ([tone, label]) =>
+        `<span class="swatch"><i class="swatch__chip swatch--${tone}"></i>${label}</span>`,
+    )
     .join("");
 }
 
 function hudHtml(): string {
-  const chips: string[] = [
-    chip("仕様", "abs8(x) ≥ 0"),
-    chip("入力空間", `${DOMAIN_SIZE} 通り`),
-  ];
+  const chips: string[] = [chip("仕様", "abs8(x) ≥ 0"), chip("入力空間", `${DOMAIN_SIZE} 通り`)];
   const seen = state.cellMarks.filter((m) => m !== "empty").length;
   if (state.step >= 3) chips.push(chip("見た入力", `${seen} / ${DOMAIN_SIZE}`));
   if (state.scan === "done") chips.push(chip("反例", "x = −128", "bad"));
@@ -514,8 +514,7 @@ function chip(label: string, value: string, tone = ""): string {
 }
 
 function calloutHtml(kind: CalloutKind, text: string): string {
-  const title =
-    kind === "idea" ? "Key idea" : kind === "warn" ? "Watch out" : "次の章";
+  const title = kind === "idea" ? "Key idea" : kind === "warn" ? "Watch out" : "次の章";
   return `<aside class="callout callout--${kind}"><p class="callout__kicker">${title}</p><p>${text}</p></aside>`;
 }
 

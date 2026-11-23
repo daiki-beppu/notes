@@ -57,7 +57,9 @@ export function allInputs(): number[] {
 
 /** Scan all values except the known bug first, so the red cell appears last. */
 export function exhaustiveOrder(): number[] {
-  return allInputs().filter((x) => x !== INT8_MIN).concat(INT8_MIN);
+  return allInputs()
+    .filter((x) => x !== INT8_MIN)
+    .concat(INT8_MIN);
 }
 
 export function isInt8(n: number): boolean {

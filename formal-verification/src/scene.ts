@@ -296,7 +296,15 @@ function describeBoard(state: SceneState, _trying: boolean): SceneDesc {
 
   const labels: SceneDesc["labels"] = [
     { id: "min", x: -2.4, y: 1.2, z: 6, text: "−128", kind: "tick", anchor: "end" },
-    { id: "max", x: extent + 2.2, y: extent + 0.4, z: 6, text: "127", kind: "tick", anchor: "start" },
+    {
+      id: "max",
+      x: extent + 2.2,
+      y: extent + 0.4,
+      z: 6,
+      text: "127",
+      kind: "tick",
+      anchor: "start",
+    },
   ];
   if (callouts.length === 0) {
     labels.push({
@@ -408,7 +416,17 @@ function describeTrace(state: SceneState): SceneDesc {
     labels: [
       { id: "out-cap", x: 16.8, y: 5.4, z: 14, text: "出力", kind: "label", anchor: "start" },
       ...(phase >= 0
-        ? [{ id: "in-val", x: -7.4, y: 5.4, z: 16, text: "−128", kind: "label" as const, anchor: "end" as const }]
+        ? [
+            {
+              id: "in-val",
+              x: -7.4,
+              y: 5.4,
+              z: 16,
+              text: "−128",
+              kind: "label" as const,
+              anchor: "end" as const,
+            },
+          ]
         : []),
     ],
     callouts,
